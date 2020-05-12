@@ -56,6 +56,18 @@ checkdbinitpsql() {
 
 }
 
+checkdbinitsqlite() {
+    table=sessions
+    if [[ "$(sqlite3 ${DB_DATABASE} \
+          "SELECT count(name) FROM sqlite_master WHERE type='table' AND name='${DB_PREFIX}${table}';")" -eq 1 ]]; then
+        echo "Table ${DB_PREFIX}${table} exists! ..."
+    else
+        echo "Table ${DB_PREFIX}${table} does not exist! ..."
+        init_db
+    fi
+
+}
+
 check_configured() {
   case "${DB_DRIVER}" in
     mysql)
@@ -63,6 +75,9 @@ check_configured() {
       ;;
     pgsql)
       checkdbinitpsql
+      ;;
+    sqlite)
+      checkdbinitsqlite
       ;;
   esac
 }
